@@ -1,5 +1,9 @@
 import yfinance as yf
 
+# TODO
+# add proper error handling for detected correctly formatted date inputs
+# add option to select desired time frame
+
 class MarketDataLoader:
 
     def __init__(self, tickers):
