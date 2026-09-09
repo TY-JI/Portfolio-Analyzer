@@ -34,9 +34,10 @@ def main():
 
     # Calculating sample covariance matrix
     covariance = Covariance()
-    sample_cov = covariance.calculate_sample_cov(returns)
 
-    print(sample_cov)
+    # Testing ledoit wolf function
+    covariance.ledoit_wolf(returns)
+
 
 if __name__=='__main__':
     main()
