@@ -4,20 +4,10 @@ from returns import Returns
 from covariance import Covariance
 
 def main():
-    tickers = [
-    'AAPL',
-    'MSFT',
-    'GOOGL',
-    'JPM',
-    'XOM'
-    ]
 
     # Loading market data
-    loader = MarketDataLoader(tickers)
-    data = loader.download(
-        start='2024-01-01',
-        end='2026-01-01'
-        )
+    loader = MarketDataLoader()
+    data = loader.download()
     # Getting close prices
     close_prices = loader.get_close_prices(data)
 

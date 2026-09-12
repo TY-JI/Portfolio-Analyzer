@@ -5,8 +5,7 @@ class Covariance:
     def ledoit_wolf(self, returns):
         T, N = returns.shape
         demeaned_returns = self.demean(returns)
-        n = T - 1
-        S = self.sample_covariance(demeaned_returns, n)
+        S = self.sample_covariance(demeaned_returns, T)
         F, r_bar = self.target_matrix(S, N)
 
         pi_hat = self.pi_hat(demeaned_returns,S,T)
@@ -49,11 +48,7 @@ class Covariance:
             self.covariance_deviations(S,demeaned_returns)
         )/T
         
-        v_jj_ij = np.einsum(
-            'tj,tij->ij',
-            demeaned_returns.to_numpy()**2 - np.diag(S),
-            self.covariance_deviations(S,demeaned_returns)
-        )/T
+        v_jj_ij = v_ii_ij.T
 
         standard_deviations = np.sqrt(np.diag(S))
 
@@ -105,8 +100,8 @@ class Covariance:
     def demean(self, returns):
         return returns - returns.mean()
     
-    def sample_covariance(self, demeaned_returns, n):
-        return (demeaned_returns.T @ demeaned_returns) / n
+    def sample_covariance(self, demeaned_returns, T):
+        return (demeaned_returns.T @ demeaned_returns) / T
 
     def period_covariances(self, demeaned_returns):
         covariances = np.einsum(
