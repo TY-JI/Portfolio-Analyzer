@@ -15,7 +15,7 @@ def main():
     # Loading market data
     loader = MarketDataLoader(tickers)
     data = loader.download(
-        start='2015-01-01',
+        start='2024-01-01',
         end='2026-01-01'
         )
     # Getting close prices
@@ -32,11 +32,11 @@ def main():
         returns_calculator.calculate_returns(close_prices)
     )
 
-    # Calculating sample covariance matrix
     covariance = Covariance()
-
-    # Testing ledoit wolf function
-    covariance.ledoit_wolf(returns)
+    ledoit_wolf = covariance.ledoit_wolf(returns)
+    sample_cov_matrix = covariance.sample_covariance(returns,returns.shape[0]-1)
+    print(f'ledoit wolf: {ledoit_wolf}')
+    print(f'sample covariance matrix: {sample_cov_matrix}')
 
 
 if __name__=='__main__':
