@@ -12,13 +12,11 @@ class Covariance:
         pi_hat = self.calculate_pi_hat(
             demeaned_returns,
             S,
-            N
+            T
         )
 
-        print("Pi hat:", pi_hat)
-        print(F)
-        print(r_bar)
-        print(self.calculate_rho(demeaned_returns,S,T))
+        print(self.calculate_pi_hat(demeaned_returns,S,T)-self.calculate_rho(demeaned_returns, S, T, r_bar))
+
 
     def calculate_pi_hat_matrix(self, demeaned_returns, S, T):
         deviation = self.calculate_covariance_deviations(S,demeaned_returns)
@@ -31,18 +29,29 @@ class Covariance:
         pi_hat = self.calculate_pi_hat_matrix(demeaned_returns, S,T).sum()
         return pi_hat
 
-    def calculate_rho(self, demeaned_returns, S, T):
+    def calculate_rho(self, demeaned_returns, S, T, r_bar):
         rho_diag = np.diag(self.calculate_pi_hat_matrix(demeaned_returns, S, T)).sum()
 
-        theta = np.einsum(
+        v_ii_ij = np.einsum(
             'ti,tij->ij',
-            (demeaned_returns.to_numpy()**2 - np.diag(S)),
-            (self.calculate_covariance_deviations(S,demeaned_returns))
+            demeaned_returns.to_numpy()**2 - np.diag(S),
+            self.calculate_covariance_deviations(S,demeaned_returns)
+        )/T
+        
+        v_jj_ij = v_ii_ij.T
+
+        standard_deviations = np.sqrt(np.diag(S))
+        standard_deviation_ratio = np.outer(
+            standard_deviations,
+            1/standard_deviations
         )
 
-        theta = np.fill_diagonal(theta,0)
+        theta = (r_bar/2) * ((1/standard_deviation_ratio) * v_ii_ij + standard_deviation_ratio * v_jj_ij)
 
-        return theta
+        np.fill_diagonal(theta,0)
+        rho_off_diag = theta.sum()
+
+        return rho_diag + rho_off_diag
 
     def calculate_sample_covariance(self, demeaned_returns, n):
         return (demeaned_returns.T @ demeaned_returns) / n
